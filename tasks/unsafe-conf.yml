@@ -1,0 +1,33 @@
+---
+- name: Update config and backout if validation fails
+  block:
+    - name: Do the actual rendering
+      ansible.builtin.template:
+        src: '{{ item.src }}'
+        dest: /etc/nginx/{{ item.dest }}
+        owner: root
+        group: root
+        mode: '0644'
+        backup: yes
+      register: updated
+      notify: Reload nginx
+    - name: Run nginx validation
+      ansible.builtin.command:
+        cmd: nginx -t
+      changed_when: false
+  rescue:
+    - name: Restore backup file to original, in the hope the previous configuration was working.
+      ansible.builtin.copy:
+        remote_src: true
+        dest: /etc/nginx/{{ item }}
+        src: "{{ updated['backup_file'] }}"
+        owner: root
+        group: root
+        mode: '0644'
+      when: updated['backup_file'] is defined
+  always:
+    - name: Always delete backup file
+      ansible.builtin.file:
+        path: "{{ updated['backup_file'] }}"
+        state: absent
+      when: updated['backup_file'] is defined

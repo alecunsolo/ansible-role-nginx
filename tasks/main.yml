@@ -1,2 +1,19 @@
 ---
-# tasks file for nginx
+- name: Install nginx.
+  ansible.builtin.package:
+    name: nginx
+    state: present
+
+- name: Main nginx configuration.
+  ansible.builtin.template:
+    src: '{{ nginx_main_config }}'
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+    validate: nginx -t -c %s
+
+# https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#the-validate-option-is-not-enough-for-my-needs-what-do-i-do
+- name: Add common configuration files
+  ansible.builtin.include_tasks: unsafe-conf.yml
+  loop: '{{ nginx_static_files }}'

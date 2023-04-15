@@ -1,2 +1,5 @@
 ---
-# defaults file for nginx
+nginx_main_config: nginx.{{ ansible_os_family | lower }}.conf
+nginx_static_files:
+  - src: proxy_params
+    dest: proxy_params
