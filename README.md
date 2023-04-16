@@ -4,31 +4,58 @@
 Ansible Role: nginx
 =========
 
-A brief description of the role goes here.
+Ansible role to install and configure nginx. Site definitions are stored in the `/etc/conf.d` directory and can be managed by this role.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+The role depends on `community.crypto` to generate self-signed certifiate used to block direct ip access when the `ssl_reject_handshake` directive is not available (ver < 1.19.4).
+The module used depends on the python `cryptography` library.
 
 Role Variables
 --------------
-
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+```yaml
+nginx_main_config: nginx.{{ ansible_os_family | lower }}.conf
+```
+The name of the main configuration template file.
+```yaml
+nginx_static_files:
+  - src: proxy_params
+    dest: proxy_params
+```
+List of common files to deploy (dest directory partent is `/etc/nginx`)
+```yaml
+nginx_configure_default_block: true
+nginx_default_reject_site: default-reject.conf.j2
+```
+Wheter to configure of not the default rejecting behaviour and the template to use.
+```yaml
+nginx_configured_sites: []
+# - src: mysite.conf.j2
+#   dest: conf.d/mysite.conf
+```
+List of site definition to be deployed. Any site not listed here will be deleted (minus the default rejection one, if the option is enabled).
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+The role depends on `community.crypto` for the self-signed certificate generation.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yaml
+- name: Converge
+  hosts: all
+  vars:
+    nginx_configured_sites:
+      - src: mysite.conf.j2
+        dest: conf.d/mysite.conf
+  tasks:
+    - name: Include nginx.
+      ansible.builtin.include_role:
+        name: alecunsolo.nginx
+```
 
 License
 -------
