@@ -1,0 +1,14 @@
+server {
+  listen 80 default_server;
+  listen 443 default_server;
+
+{% if ng_ssl_reject_handshake_supported %}
+  ssl_reject_handshake on;
+{% else %}
+  ssl_certificate /etc/nginx/ssl/reject.crt;
+  ssl_certificate_key /etc/nginx/ssl/reject.key;
+{% endif %}
+
+  server_name _;
+  return 444;
+}
