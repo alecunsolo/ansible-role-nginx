@@ -27,10 +27,12 @@
 # https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#the-validate-option-is-not-enough-for-my-needs-what-do-i-do
 - name: Add common configuration files
   ansible.builtin.include_tasks: unsafe-conf.yml
+  tags: nginx_static
   loop: '{{ nginx_static_files }}'
 
 - name: Add custom site definitions.
   ansible.builtin.include_tasks: unsafe-conf.yml
+  tags: nginx_sites
   loop: '{{ nginx_configured_sites }}'
 
 - name: Find installed sites.
