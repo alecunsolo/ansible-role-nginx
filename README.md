@@ -4,13 +4,12 @@
 Ansible Role: nginx
 =========
 
-Ansible role to install and configure nginx. Site definitions are stored in the `/etc/conf.d` directory and can be managed by this role.
+Ansible role to install and configure nginx. Site definitions are stored in the `/etc/nginx/conf.d` directory and can be managed by this role.
 
 Requirements
 ------------
 
-The role depends on `community.crypto` to generate self-signed certifiate used to block direct ip access when the `ssl_reject_handshake` directive is not available (ver < 1.19.4).
-The module used depends on the python `cryptography` library.
+None.
 
 Role Variables
 --------------
@@ -29,10 +28,9 @@ nginx_manage_selinux: true
 ```
 Whether to enable `httpd_can_network_connect` on `SELinux` enabled systems.
 ```yaml
-nginx_configure_default_block: true
-nginx_default_reject_site: default-reject.conf.j2
+nginx_exclusive_sites: true
 ```
-Wheter to configure of not the default rejecting behaviour and the template to use.
+Whether the role should take full controll of the configured sites (deleting undefinded files) or not.
 ```yaml
 nginx_configured_sites: []
 # - src: mysite.conf.j2
@@ -43,7 +41,6 @@ List of site definition to be deployed. Any site not listed here will be deleted
 Dependencies
 ------------
 
-The role depends on `community.crypto` for the self-signed certificate generation.
 The role also need `ansible.posix` for SELinux related operations.
 
 Example Playbook
