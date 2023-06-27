@@ -1,0 +1,28 @@
+---
+- name: Ensure custom stream directory exists.
+  ansible.builtin.file:
+    dest: /etc/nginx/streams.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Add custom streams definitions.
+  ansible.builtin.include_tasks: unsafe-conf.yml
+  loop: '{{ nginx_configured_streams }}'
+
+- name: Cleanup manually added streams.
+  when: nginx_exclusive_streams
+  block:
+    - name: Find installed streams.
+      ansible.builtin.find:
+        paths: /etc/nginx/streams.d
+        patterns: '*.conf'
+      register: ng_streams
+
+    - name: Clean up installed streams.
+      ansible.builtin.file:
+        path: '{{ item }}'
+        state: absent
+      when: (item | replace("/etc/nginx/", "")) is not in nginx_configured_streams_dest
+      loop: '{{ ng_streams["files"] | map(attribute="path") }}'
