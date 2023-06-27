@@ -10,3 +10,8 @@ nginx_exclusive_sites: true
 nginx_configured_sites: []
 # - src: mysite.conf.j2
 #   dest: conf.d/mysite.conf
+
+nginx_exclusive_streams: true
+nginx_configured_streams: []
+# - src: mystream.conf.j2
+#   dest: streams.d/mystream.conf
