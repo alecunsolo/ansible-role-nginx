@@ -51,3 +51,9 @@
       #   msg: '{{ nginx_configured_sites | map(attribute="dest") }}'
       when: (item | replace("/etc/nginx/", "")) is not in nginx_configured_sites_dest
       loop: '{{ ng_sites["files"] | map(attribute="path") }}'
+
+- name: Ensure nginx is up and running.
+  ansible.builtin.service:
+    name: nginx.service
+    state: started
+    enabled: yes
