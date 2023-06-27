@@ -4,6 +4,12 @@
     name: nginx
     state: present
 
+- name: Install nginx modules.
+  ansible.builtin.dnf:
+    name: nginx-all-modules
+    state: present
+  when: (ansible_os_family | lower) == 'redhat'
+
 - name: Main nginx configuration.
   ansible.builtin.template:
     src: '{{ nginx_main_config }}'
@@ -54,9 +60,40 @@
       ansible.builtin.file:
         path: '{{ item }}'
         state: absent
-      #   msg: '{{ nginx_configured_sites | map(attribute="dest") }}'
       when: (item | replace("/etc/nginx/", "")) is not in nginx_configured_sites_dest
       loop: '{{ ng_sites["files"] | map(attribute="path") }}'
+
+- name: Ensure custom stream directory exists.
+  ansible.builtin.file:
+    dest: /etc/nginx/streams.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Add custom streams definitions.
+  ansible.builtin.include_tasks:
+    file: unsafe-conf.yml
+    apply:
+      tags: nginx_streams
+  tags: nginx_streams
+  loop: '{{ nginx_configured_streams }}'
+
+- name: Cleanup manually added streams.
+  when: nginx_exclusive_streams
+  block:
+    - name: Find installed streams.
+      ansible.builtin.find:
+        paths: /etc/nginx/streams.d
+        patterns: '*.conf'
+      register: ng_streams
+
+    - name: Clean up installed streams.
+      ansible.builtin.file:
+        path: '{{ item }}'
+        state: absent
+      when: (item | replace("/etc/nginx/", "")) is not in nginx_configured_streams_dest
+      loop: '{{ ng_streams["files"] | map(attribute="path") }}'
 
 - name: Ensure nginx is up and running.
   ansible.builtin.service:
