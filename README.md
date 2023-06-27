@@ -25,6 +25,10 @@ nginx_static_files:
 ```
 List of common files to deploy (dest directory partent is `/etc/nginx`)
 ```yaml
+nginx_manage_selinux: true
+```
+Whether to enable `httpd_can_network_connect` on `SELinux` enabled systems.
+```yaml
 nginx_configure_default_block: true
 nginx_default_reject_site: default-reject.conf.j2
 ```
@@ -40,6 +44,7 @@ Dependencies
 ------------
 
 The role depends on `community.crypto` for the self-signed certificate generation.
+The role also need `ansible.posix` for SELinux related operations.
 
 Example Playbook
 ----------------
