@@ -28,6 +28,10 @@ nginx_manage_selinux: true
 ```
 Whether to enable `httpd_can_network_connect` on `SELinux` enabled systems.
 ```yaml
+nginx_exclusive_sites: true
+```
+Whether the role should take full controll of the configured sites (deleting undefinded files) or not.
+```yaml
 nginx_configured_sites: []
 # - src: mysite.conf.j2
 #   dest: conf.d/mysite.conf

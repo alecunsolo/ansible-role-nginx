@@ -35,16 +35,19 @@
   tags: nginx_sites
   loop: '{{ nginx_configured_sites }}'
 
-- name: Find installed sites.
-  ansible.builtin.find:
-    paths: /etc/nginx/conf.d
-    patterns: '*.conf'
-  register: ng_sites
+- name: Cleanup manually added sites.
+  when: nginx_exclusive_sites
+  block:
+    - name: Find installed sites.
+      ansible.builtin.find:
+        paths: /etc/nginx/conf.d
+        patterns: '*.conf'
+      register: ng_sites
 
-- name: Clean up installed sites.
-  ansible.builtin.file:
-    path: '{{ item }}'
-    state: absent
-  #   msg: '{{ nginx_configured_sites | map(attribute="dest") }}'
-  when: (item | replace("/etc/nginx/", "")) is not in nginx_configured_sites_dest
-  loop: '{{ ng_sites["files"] | map(attribute="path") }}'
+    - name: Clean up installed sites.
+      ansible.builtin.file:
+        path: '{{ item }}'
+        state: absent
+      #   msg: '{{ nginx_configured_sites | map(attribute="dest") }}'
+      when: (item | replace("/etc/nginx/", "")) is not in nginx_configured_sites_dest
+      loop: '{{ ng_sites["files"] | map(attribute="path") }}'

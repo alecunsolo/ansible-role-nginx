@@ -6,6 +6,7 @@ nginx_static_files:
 
 nginx_manage_selinux: true
 
+nginx_exclusive_sites: true
 nginx_configured_sites: []
 # - src: mysite.conf.j2
 #   dest: conf.d/mysite.conf
