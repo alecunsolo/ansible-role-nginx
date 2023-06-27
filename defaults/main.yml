@@ -4,6 +4,8 @@ nginx_static_files:
   - src: proxy_params
     dest: proxy_params
 
+nginx_manage_selinux: true
+
 nginx_configure_default_block: true
 nginx_default_reject_site: default-reject.conf.j2
 nginx_configured_sites: []

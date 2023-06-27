@@ -13,6 +13,17 @@
     mode: '0644'
     validate: nginx -t -c %s
 
+- name: Enable selinux boolean
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true
+  when:
+    - nginx_manage_selinux
+    - ansible_selinux is defined
+    - ansible_selinux
+    - ansible_selinux.status == 'enabled'
+
 # https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#the-validate-option-is-not-enough-for-my-needs-what-do-i-do
 - name: Add common configuration files
   ansible.builtin.include_tasks: unsafe-conf.yml
