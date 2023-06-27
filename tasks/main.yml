@@ -29,10 +29,6 @@
   ansible.builtin.include_tasks: unsafe-conf.yml
   loop: '{{ nginx_static_files }}'
 
-- name: Configure default block.
-  ansible.builtin.include_tasks: default-block.yml
-  when: nginx_configure_default_block
-
 - name: Add custom site definitions.
   ansible.builtin.include_tasks: unsafe-conf.yml
   loop: '{{ nginx_configured_sites }}'
@@ -41,7 +37,6 @@
   ansible.builtin.find:
     paths: /etc/nginx/conf.d
     patterns: '*.conf'
-    excludes: "{{ nginx_configure_default_block | ternary('default-reject.conf', omit) }}"
   register: ng_sites
 
 - name: Clean up installed sites.
