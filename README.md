@@ -4,6 +4,10 @@
 Ansible Role: nginx
 =========
 
+## DISCLAIMER
+After [this](https://www.redhat.com/en/blog/furthering-evolution-centos-stream) announcement I will not test on RHEL anymore.
+
+---------
 Ansible role to install and configure nginx. Site definitions are stored in the `/etc/nginx/conf.d` directory and can be managed by this role.
 
 Requirements
