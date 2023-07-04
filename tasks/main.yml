@@ -1,7 +1,10 @@
 ---
+- name: Read distro specific variables.
+  ansible.builtin.include_vars: '{{ ansible_os_family | lower }}.yml'
+
 - name: Install nginx.
   ansible.builtin.package:
-    name: nginx
+    name: '{{ nginx_package }}'
     state: present
 
 - name: Install nginx modules.
